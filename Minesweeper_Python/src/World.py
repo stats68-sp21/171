@@ -127,7 +127,7 @@ class World():
 	###############################################
 	#				ACTIONS ON BOARD 			  #
 	###############################################
-	def __checkValidAction(self, actionObj: "Action Object") -> bool:
+	def __checkValidAction(self, actionObj) -> bool:
 		""" Check if move is valid, and if coordinates are valid, returning a boolean """
 		move = actionObj.getMove()
 		X = actionObj.getX()
@@ -139,7 +139,7 @@ class World():
 		raise ValueError
 
 
-	def __doMove(self, actionObj: "Action Object") -> bool:
+	def __doMove(self, actionObj) -> bool:
 		""" Perform a move on the game board based on given action and x, y coords """
 		""" Return True when game is over, False otherwise """
 		self.__movesMade += 1
