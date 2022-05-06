@@ -16,6 +16,7 @@ from AI import AI
 from Action import Action
 import numpy as np
 from random import randint
+import time
 
 
 class MyAI( AI ):
@@ -30,10 +31,11 @@ class MyAI( AI ):
 		self.numUncoveredtiles = 1
 		self.unTiles = []
 		self.flag = []
-		self.uncovered = []
 		self.label = np.full((rowDimension, colDimension), -1)
-		self.elabel = np.zeroes(rowDimension, colDimension)
+		self.elabel = np.zeros((rowDimension, colDimension))
 		self.amove = Action(AI.Action.UNCOVER, startX, startY) #uncovers the first move tile 
+		self.time_elapsed = 0.0
+
 		
 
 		
@@ -46,33 +48,55 @@ class MyAI( AI ):
 
 		
 	def getAction(self, number: int):
-		
+
+		#Note: The max time I'm putting rn is arbitrary since idk how much time there really is
+		MAX_TIME = 1000
+		remaining_time = MAX_TIME - self.time_elapsed
+
+		if(remaining_time < 3):
+			random_coords = self.chooseRandom()
+			print("hi")
+			return Action(AI.Action.UNCOVER, random_coords[0],random_coords[1])
+		else:
+			print("Action start!")
+			ts = time.time()
 		########################################################################
 		#							YOUR CODE BEGINS						   #
 		########################################################################
 		
-		#win condition= uncovered all except one tile 
-		if (self.row * self.col) - self.numOfMines == self.numUncoveredtiles:
-			return Action(AI.Action.LEAVE)
+			#win condition= uncovered all except one tile 
+			if (self.row * self.col) - self.numOfMines == self.numUncoveredtiles:
+				print('not supposed to be here')
+				return Action(AI.Action.LEAVE)
 
-		#check which tiles are uncovered relative to the current position
-		#uncovered = [] #tiles uncovered relative to start position
-		
-		if number != -1: # if uncover then update
-			self.unTiles.append((self.amove.getX(), self.amove.getY())) # uncovered tiles
-			self.label[self.amove.getX(), self.amove.getY()] = number # number of neighbors
+			#check which tiles are uncovered relative to the current position
+			#uncovered = [] #tiles uncovered relative to start position
+			
+			if number != -1: # if uncover then update
 
-			numFlagged, numNoFlagged = self.marked(self.amove.getX(), self.amove.getY())
+				self.unTiles.append((self.amove.getX(), self.amove.getY())) # uncovered tiles
+				self.label[self.amove.getX(), self.amove.getY()] = number # number of neighbors
 
-			# EffectiveLabel(x) = Label(x) – NumMarkedNeighbors(x)
+				numFlagged, numNoFlagged = self.markedOrUnmarked(self.amove.getX(), self.amove.getY())
 
-			self.elabel[self.amove.getX(), self.amove.getY()] = self.label[self.amove.getX(), self.amove.getY()] - numFlagged
+				# EffectiveLabel(x) = Label(x) – NumMarkedNeighbors(x)
+			
+				self.elabel[self.amove.getX(), self.amove.getY()] = self.label[self.amove.getX(), self.amove.getY()] - numFlagged
 
-			if self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged:
+				
+				if self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged: # mark all unmarked neighbors
+					self.coverAll(self.amove.getX(), self.amove.getY(),ts)
+					
 
 				if self.elabel[self.amove.getX(), self.amove.getY()] == 0: # uncover all unmarked neighbors
-					self.unCoverAll(self.amove.getX(), self.amove.getY())
+					
+					return self.unCoverAll(self.amove.getX(), self.amove.getY(),ts)
+				else:
+					return Action(AI.Action.LEAVE)
 
+			#print("Why are we here?")
+
+			
 
 
 
@@ -85,28 +109,45 @@ class MyAI( AI ):
 		########################################################################
 		#							YOUR CODE ENDS							   #
 		########################################################################
-	def unCoverAll(self, x, y):
-		
+
+
+	
+
+	def coverAll(self, x, y, ts):
 		# left side
 		## left
-		if self.tileinBounds(x - 1, y) and (x - 1, y) not in self.flag and (x - 1, y) not in self.uncovered: # if coordinates is valid and it is not a flag and it is not uncovered
-			self.uncovered.append((x - 1, y))
-			self.amove = Action(AI.Action.UNCOVER, x - 1, y)
+		if self.tileinBounds(x - 1, y) and (x - 1, y) not in self.flag and (x - 1, y) not in self.unTiles: # if coordinates is valid and it is not a flag and it is not uncovered
+			self.flag.append((x - 1, y))
+			self.amove = Action(AI.Action.FLAG, x - 1, y)
+
+			#time now
+			tE = time.time()
+			dt = tE-ts
+			self.time_elapsed += dt
+
 
 			return self.amove
 	
 		## top left
-		if self.tileinBounds(x - 1, y + 1) and (x - 1, y + 1) not in self.flag and (x - 1, y + 1) not in self.uncovered: 
+		if self.tileinBounds(x - 1, y + 1) and (x - 1, y + 1) not in self.flag and (x - 1, y + 1) not in self.unTiles: 
 
-			self.uncovered.append((x - 1, y + 1))
-			self.amove = Action(AI.Action.UNCOVER, x - 1, y + 1)
+			self.flag.append((x - 1, y + 1))
+			self.amove = Action(AI.Action.FLAG, x - 1, y + 1)
+
+			tE = time.time()
+			dt = tE-ts
+			self.time_elapsed += dt
 
 			return self.amove
 		
 		## bottom left
-		if self.tileinBounds(x - 1, y - 1) and (x - 1, y - 1) not in self.flag  and (x - 1, y - 1) not in self.uncovered: 
-			self.uncovered.append((x - 1, y - 1))
-			self.amove = Action(AI.Action.UNCOVER, x - 1, y - 1)
+		if self.tileinBounds(x - 1, y - 1) and (x - 1, y - 1) not in self.flag  and (x - 1, y - 1) not in self.unTiles: 
+			self.flag.append((x - 1, y - 1))
+			self.amove = Action(AI.Action.FLAG, x - 1, y - 1)
+
+			tE = time.time()
+			dt = tE-ts
+			self.time_elapsed += dt
 
 			return self.amove
 		
@@ -114,39 +155,163 @@ class MyAI( AI ):
 		# right side
 
 		## right
-		if self.tileinBounds(x + 1, y) and (x + 1, y) not in self.flag and (x + 1, y) not in self.uncovered: 
-			self.uncovered.append((x + 1, y))
-			self.amove = Action(AI.Action.UNCOVER, x + 1, y)
+		if self.tileinBounds(x + 1, y) and (x + 1, y) not in self.flag and (x + 1, y) not in self.unTiles: 
+			self.flag.append((x + 1, y))
+			self.amove = Action(AI.Action.FLAG, x + 1, y)
+
+			tE = time.time()
+			dt = tE-ts
+			self.time_elapsed += dt
 
 			return self.amove
 		
 		## top right
-		if self.tileinBounds(x + 1, y + 1)  and (x + 1, y + 1) not in self.flag and (x + 1, y + 1) not in self.uncovered: 
-			self.uncovered.append((x + 1, y + 1))
-			self.amove = Action(AI.Action.UNCOVER,x + 1, y + 1)
+		if self.tileinBounds(x + 1, y + 1)  and (x + 1, y + 1) not in self.flag and (x + 1, y + 1) not in self.unTiles: 
+			self.flag.append((x + 1, y + 1))
+			self.amove = Action(AI.Action.FLAG, y + 1)
+
+			tE = time.time()
+			dt = tE-ts
+			self.time_elapsed += dt
 
 			return self.amove
 		
 		## top right
-		if self.tileinBounds(x + 1, y - 1) and (x + 1, y - 1) not in self.flag and (x + 1, y - 1) not in self.uncovered: 
-			self.uncovered.append((x + 1, y - 1))
-			self.amove = Action(AI.Action.UNCOVER, x + 1, y - 1)
+		if self.tileinBounds(x + 1, y - 1) and (x + 1, y - 1) not in self.flag and (x + 1, y - 1) not in self.unTiles: 
+			self.flag.append((x + 1, y - 1))
+			self.amove = Action(AI.Action.FLAG, x + 1, y - 1)
+
+			tE = time.time()
+			dt = tE - ts
+			self.time_elapsed += dt
 
 			return self.amove
 		
 
 		#top 
-		if self.tileinBounds(x, y + 1) and (x, y + 1) not in self.flag and (x, y + 1) not in self.uncovered: 
-			self.uncovered.append((x, y + 1))
-			self.amove = Action(AI.Action.UNCOVER, x, y + 1)
+		if self.tileinBounds(x, y + 1) and (x, y + 1) not in self.flag and (x, y + 1) not in self.unTiles: 
+			self.flag.append((x, y + 1))
+			self.amove = Action(AI.Action.FLAG, x, y + 1)
+
+			tE = time.time()
+			dt = tE-ts
+			self.time_elapsed += dt
 
 			return self.amove
 
 		#bottom 
-		if self.tileinBounds(x, y - 1) and (x, y - 1) not in self.flag and (x, y - 1) not in self.uncovered: 
-			self.uncovered.append((x, y - 1))
+		if self.tileinBounds(x, y - 1) and (x, y - 1) not in self.flag and (x, y - 1) not in self.unTiles: 
+			self.flag.append((x, y - 1))
+			self.amove = Action(AI.Action.FLAG, x, y - 1)
+
+			tE = time.time()
+			dt = tE - ts
+			self.time_elapsed += dt
+
+			return self.amove
+
+
+
+
+
+	def unCoverAll(self, x, y,ts):
+		
+		print('were here')
+		# left side
+		## left
+		if self.tileinBounds(x - 1, y) and (x - 1, y) not in self.flag and (x - 1, y) not in self.unTiles: # if coordinates is valid and it is not a flag and it is not uncovered
+			self.unTiles.append((x - 1, y))
+			self.amove = Action(AI.Action.UNCOVER, (x - 1), y)
+
+			tE = time.time()
+			dt = tE - ts
+			self.time_elapsed += dt
+
+			print('we got here')
+
+			return self.amove
+	
+		## top left
+		if self.tileinBounds(x - 1, y + 1) and (x - 1, y + 1) not in self.flag and (x - 1, y + 1) not in self.unTiles: 
+
+			self.unTiles.append((x - 1, y + 1))
+			self.amove = Action(AI.Action.UNCOVER, x - 1, y + 1)
+
+			tE = time.time()
+			dt = tE - ts
+			self.time_elapsed += dt
+
+			return self.amove
+		
+		## bottom left
+		if self.tileinBounds(x - 1, y - 1) and (x - 1, y - 1) not in self.flag  and (x - 1, y - 1) not in self.unTiles: 
+			self.unTiles.append((x - 1, y - 1))
+			self.amove = Action(AI.Action.UNCOVER, x - 1, y - 1)
+
+			tE = time.time()
+			dt = tE - ts
+			self.time_elapsed += dt
+
+			return self.amove
+		
+
+		# right side
+
+		## right
+		if self.tileinBounds(x + 1, y) and (x + 1, y) not in self.flag and (x + 1, y) not in self.unTiles: 
+			self.unTiles.append((x + 1, y))
+			self.amove = Action(AI.Action.UNCOVER, x + 1, y)
+
+			tE = time.time()
+			dt = tE - ts
+			self.time_elapsed += dt
+
+			return self.amove
+		
+		## top right
+		if self.tileinBounds(x + 1, y + 1)  and (x + 1, y + 1) not in self.flag and (x + 1, y + 1) not in self.unTiles: 
+			self.unTiles.append((x + 1, y + 1))
+			self.amove = Action(AI.Action.UNCOVER, x + 1, y + 1)
+
+			tE = time.time()
+			dt = tE - ts
+			self.time_elapsed += dt
+
+			return self.amove
+		
+		## top right
+		if self.tileinBounds(x + 1, y - 1) and (x + 1, y - 1) not in self.flag and (x + 1, y - 1) not in self.unTiles: 
+			self.unTiles.append((x + 1, y - 1))
+			self.amove = Action(AI.Action.UNCOVER, x + 1, y - 1)
+
+			tE = time.time()
+			dt = tE - ts
+			self.time_elapsed += dt
+
+			return self.amove
+		
+
+		#top 
+		if self.tileinBounds(x, y + 1) and (x, y + 1) not in self.flag and (x, y + 1) not in self.unTiles: 
+			self.unTiles.append((x, y + 1))
+			self.amove = Action(AI.Action.UNCOVER, x, y + 1)
+
+			tE = time.time()
+			dt = tE - ts
+			self.time_elapsed += dt
+		
+			return self.amove
+
+		#bottom 
+		if self.tileinBounds(x, y - 1) and (x, y - 1) not in self.flag and (x, y - 1) not in self.unTiles: 
+			self.unTiles.append((x, y - 1))
 			self.amove = Action(AI.Action.UNCOVER, x, y - 1)
 
+			tE = time.time()
+			dt = tE - ts
+			self.time_elapsed += dt
+
+			#time check
 			return self.amove
 		
 
@@ -155,56 +320,56 @@ class MyAI( AI ):
 		j = 0 # not marked with a flag
 		# left side
 		## left
-		if self.tileinBounds(x - 1, y) and (x - 1, y) in self.flag and (x - 1, y) not in self.uncovered: # if valid move and flagged and not uncovered
+		if self.tileinBounds(x - 1, y) and (x - 1, y) in self.flag and (x - 1, y) not in self.unTiles: # if valid move and flagged and not uncovered
 			i +=1 
 		
-		if self.tileinBounds(x - 1, y) and (x - 1, y) not in self.flag and (x - 1, y) not in self.uncovered: #if valid move and unflagged and  not uncovered
+		if self.tileinBounds(x - 1, y) and (x - 1, y) not in self.flag and (x - 1, y) not in self.unTiles: #if valid move and unflagged and  not uncovered
 			j +=1 
 
 
 		## top left
-		if self.tileinBounds(x - 1, y + 1) and (x - 1, y + 1) in self.flag and (x - 1, y + 1) not in self.uncovered: 
+		if self.tileinBounds(x - 1, y + 1) and (x - 1, y + 1) in self.flag and (x - 1, y + 1) not in self.unTiles: 
 			i +=1 
 		
-		if self.tileinBounds(x - 1, y + 1) and (x - 1, y + 1) not in self.flag and (x - 1, y + 1) not in self.uncovered: 
+		if self.tileinBounds(x - 1, y + 1) and (x - 1, y + 1) not in self.flag and (x - 1, y + 1) not in self.unTiles: 
 			j +=1 
 		## bottom left
-		if self.tileinBounds(x - 1, y - 1) and (x - 1, y - 1) in self.flag and (x - 1, y - 1) not in self.uncovered: 
+		if self.tileinBounds(x - 1, y - 1) and (x - 1, y - 1) in self.flag and (x - 1, y - 1) not in self.unTiles: 
 			i +=1 
-		if self.tileinBounds(x - 1, y - 1) and (x - 1, y - 1) not in self.flag and (x - 1, y - 1) not in self.uncovered: 
+		if self.tileinBounds(x - 1, y - 1) and (x - 1, y - 1) not in self.flag and (x - 1, y - 1) not in self.unTiles: 
 			j +=1 
 
 		# right side
 
 		## right
-		if self.tileinBounds(x + 1, y) and (x + 1, y) in self.flag and (x + 1, y) not in self.uncovered:
+		if self.tileinBounds(x + 1, y) and (x + 1, y) in self.flag and (x + 1, y) not in self.unTiles:
 			i +=1 
-		if self.tileinBounds(x + 1, y) and (x + 1, y) not in self.flag and (x + 1, y) not in self.uncovered:
+		if self.tileinBounds(x + 1, y) and (x + 1, y) not in self.flag and (x + 1, y) not in self.unTiles:
 			j +=1 
 		
 		## top right
-		if self.tileinBounds(x + 1, y + 1) and (x + 1, y + 1) in self.flag and (x + 1, y + 1) not in self.uncovered: 
+		if self.tileinBounds(x + 1, y + 1) and (x + 1, y + 1) in self.flag and (x + 1, y + 1) not in self.unTiles: 
 			i +=1 
-		if self.tileinBounds(x + 1, y + 1) and (x + 1, y + 1) not in self.flag and (x + 1, y + 1) not in self.uncovered:
+		if self.tileinBounds(x + 1, y + 1) and (x + 1, y + 1) not in self.flag and (x + 1, y + 1) not in self.unTiles:
 			j +=1 
 
 		## bottom right
-		if self.tileinBounds(x + 1, y - 1) and (x + 1, y - 1) in self.flag and (x + 1, y - 1) not in self.uncovered:
+		if self.tileinBounds(x + 1, y - 1) and (x + 1, y - 1) in self.flag and (x + 1, y - 1) not in self.unTiles:
 			i +=1 
-		if self.tileinBounds(x + 1, y - 1) and (x + 1, y - 1) not in self.flag and (x + 1, y - 1) not in self.uncovered: 
+		if self.tileinBounds(x + 1, y - 1) and (x + 1, y - 1) not in self.flag and (x + 1, y - 1) not in self.unTiles: 
 			j +=1 
 
 
 		#top 
-		if self.tileinBounds(x, y + 1) and (x, y + 1) in self.flag and  (x, y + 1) not in self.uncovered: 
+		if self.tileinBounds(x, y + 1) and (x, y + 1) in self.flag and  (x, y + 1) not in self.unTiles: 
 			i +=1 
-		if self.tileinBounds(x, y + 1) and (x, y + 1) not in self.flag and (x, y + 1) not in self.uncovered:
+		if self.tileinBounds(x, y + 1) and (x, y + 1) not in self.flag and (x, y + 1) not in self.unTiles:
 			j +=1 
 
 		#bottom 
-		if self.tileinBounds(x, y - 1) and (x, y - 1) in self.flag and (x, y - 1) not in self.uncovered: 
+		if self.tileinBounds(x, y - 1) and (x, y - 1) in self.flag and (x, y - 1) not in self.unTiles: 
 			i +=1 
-		if self.tileinBounds(x, y - 1) and (x, y - 1) not in self.flag and (x, y - 1) not in self.uncovered:
+		if self.tileinBounds(x, y - 1) and (x, y - 1) not in self.flag and (x, y - 1) not in self.unTiles:
 			j +=1 
 
 		return i, j
