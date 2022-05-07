@@ -41,12 +41,9 @@ class MyAI( AI ):
 
 		self.label = np.full((rowDimension, colDimension), -1)
 		self.elabel = np.full((rowDimension, colDimension), -1)
-<<<<<<< HEAD
 		self.refLabel = np.full((rowDimension, colDimension), "") # this creates a reference board, an empty string indicates the tile has not been touched yet
 		# we can label each tile as a flagged and uncovered
 
-=======
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 		self.amove = Action(AI.Action.UNCOVER, startX, startY) #uncovers the first move tile 
 		self.time_elapsed = 0.0
 
@@ -162,13 +159,8 @@ class MyAI( AI ):
 		# left side
 		## left
 		print("Hi, we're covering stuff now")
-<<<<<<< HEAD
 		if self.tileinBounds(x - 1, y) and self.refLabel[x - 1, y] == '':  # if coordinates is valid and it is not touched yet
 			self.refLabel[x - 1, y] = 'F'
-=======
-		if self.tileinBounds(x - 1, y) and (x - 1, y) not in self.flag and (x - 1, y) not in self.unTiles: # if coordinates is valid and it is not a flag and it is not uncovered
-			self.flag.append((x - 1, y))
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 			print("hi, welcome to the left!")
 			self.amove = Action(AI.Action.FLAG, x - 1, y)
 
@@ -192,8 +184,6 @@ class MyAI( AI ):
 			print("Hi welcome to the top left!")
 			self.refLabel[x - 1, y + 1] = 'F'
 			self.amove = Action(AI.Action.FLAG, x - 1, y + 1)
-			self.updateELabel(x - 1, y + 1)
-
 
 			print('printing elabel before')
 			print(self.elabel[x - 1, y + 1])
@@ -213,8 +203,6 @@ class MyAI( AI ):
 			print("hi welcome to the bottom left")
 			self.refLabel[x - 1, y 	- 1] = 'F'
 			self.amove = Action(AI.Action.FLAG, x - 1, y - 1)
-			self.updateELabel(x - 1, y - 1)
-			print()
 
 
 			print('printing elabel before')
@@ -239,26 +227,11 @@ class MyAI( AI ):
 			print("hi welcome to the right!")
 			self.refLabel[x + 1, y] = 'F'
 			self.amove = Action(AI.Action.FLAG, x + 1, y)
-			self.updateELabel(x + 1, y)
 
-<<<<<<< HEAD
 			print('printing elabel before')
 			print(self.elabel[x + 1, y])
 			self.updateELabel(x + 1, y)
 			print('fin')
-=======
-			tE = time.time()
-			dt = tE-ts
-			self.time_elapsed += dt
-
-			return self.amove
-		
-		## top right
-		if self.tileinBounds(x + 1, y + 1)  and (x + 1, y + 1) not in self.flag and (x + 1, y + 1) not in self.unTiles: 
-			self.flag.append((x + 1, y + 1))
-			self.amove = Action(AI.Action.FLAG, x + 1, y + 1)
-			self.updateELabel(x + 1, y + 1)
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 
 			tE = time.time()
 			dt = tE-ts
@@ -266,7 +239,6 @@ class MyAI( AI ):
 
 			return self.amove
 		
-<<<<<<< HEAD
 		## top right
 		if self.tileinBounds(x + 1, y + 1)  and self.refLabel[x + 1, y + 1] == '':  
 			
@@ -291,13 +263,7 @@ class MyAI( AI ):
 
 			print("hi welcome to the bottom right")
 			self.refLabel[x + 1, y - 1] = 'F'
-=======
-		## bottom right
-		if self.tileinBounds(x + 1, y - 1) and (x + 1, y - 1) not in self.flag and (x + 1, y - 1) not in self.unTiles: 
-			self.flag.append((x + 1, y - 1))
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 			self.amove = Action(AI.Action.FLAG, x + 1, y - 1)
-			self.updateELabel(x + 1, y - 1)
 
 			print('printing elabel before')
 			print(self.elabel[x + 1, y - 1])
@@ -318,7 +284,6 @@ class MyAI( AI ):
 			print("hi welcome to top")
 			self.refLabel[x, y + 1] = 'F'
 			self.amove = Action(AI.Action.FLAG, x, y + 1)
-			self.updateELabel(x, y + 1)
 
 			print('printing elabel before')
 			print(self.elabel[x, y + 1])
@@ -338,7 +303,6 @@ class MyAI( AI ):
 			self.refLabel[x, y - 1] = 'F'
 
 			self.amove = Action(AI.Action.FLAG, x, y - 1)
-			self.updateELabel(x, y - 1)
 
 
 			print('printing elabel before')
@@ -361,7 +325,6 @@ class MyAI( AI ):
 		print('we at uncover now')
 		# left side
 		## left
-<<<<<<< HEAD
 		if self.tileinBounds(x - 1, y) and self.refLabel[x - 1, y] == '':  # if coordinates is valid and it is not touched yet
 
 
@@ -375,26 +338,14 @@ class MyAI( AI ):
 			
 
 			#time now
-=======
-		if self.tileinBounds(x - 1, y) and (x - 1, y) not in self.flag and (x - 1, y) not in self.unTiles: # if coordinates is valid and it is not a flag and it is not uncovered
-			self.unTiles.append((x - 1, y))
-			self.amove = Action(AI.Action.UNCOVER, x - 1, y)
-			self.numUncoveredtiles += 1
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 			tE = time.time()
 			dt = tE-ts
 			self.time_elapsed += dt
 
-<<<<<<< HEAD
-=======
-			print('we got here')
-			print()
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 
 			return self.amove
 	
 		## top left
-<<<<<<< HEAD
 		if self.tileinBounds(x - 1, y + 1) and self.refLabel[x - 1, y + 1] == '':  
 			
 			print("Hi welcome to the top left!")
@@ -404,13 +355,6 @@ class MyAI( AI ):
 			
 
 
-=======
-		if self.tileinBounds(x - 1, y + 1) and (x - 1, y + 1) not in self.flag and (x - 1, y + 1) not in self.unTiles: 
-			print("Hi we're trying the top left!")
-			self.unTiles.append((x - 1, y + 1))
-			self.amove = Action(AI.Action.UNCOVER, x - 1, y + 1)
-			self.numUncoveredtiles += 1
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 			tE = time.time()
 			dt = tE-ts
 			self.time_elapsed += dt
@@ -423,12 +367,8 @@ class MyAI( AI ):
 			print("hi welcome to the bottom left")
 			self.refLabel[x - 1, y 	- 1] = 'U'
 			self.amove = Action(AI.Action.UNCOVER, x - 1, y - 1)
-<<<<<<< HEAD
 
 
-=======
-			self.numUncoveredtiles += 1
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 			tE = time.time()
 			dt = tE-ts
 			self.time_elapsed += dt
@@ -446,13 +386,9 @@ class MyAI( AI ):
 			print("hi welcome to the right!")
 			self.refLabel[x + 1, y] = 'U'
 			self.amove = Action(AI.Action.UNCOVER, x + 1, y)
-<<<<<<< HEAD
 
 			
 
-=======
-			self.numUncoveredtiles += 1
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 			tE = time.time()
 			dt = tE-ts
 			self.time_elapsed += dt
@@ -466,13 +402,9 @@ class MyAI( AI ):
 
 			self.refLabel[x + 1, y + 1] = 'U'
 			self.amove = Action(AI.Action.UNCOVER, x + 1, y + 1)
-<<<<<<< HEAD
 
 			
 
-=======
-			self.numUncoveredtiles += 1
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 			tE = time.time()
 			dt = tE-ts
 			self.time_elapsed += dt
@@ -480,7 +412,6 @@ class MyAI( AI ):
 			return self.amove
 		
 		## bottom right
-<<<<<<< HEAD
 		if self.tileinBounds(x + 1, y - 1) and self.refLabel[x + 1, y - 1] == '':
 
 			print("hi welcome to the bottom right")
@@ -489,12 +420,6 @@ class MyAI( AI ):
 
 
 
-=======
-		if self.tileinBounds(x + 1, y - 1) and (x + 1, y - 1) not in self.flag and (x + 1, y - 1) not in self.unTiles: 
-			self.unTiles.append((x + 1, y - 1))
-			self.amove = Action(AI.Action.UNCOVER, x + 1, y - 1)
-			self.numUncoveredtiles += 1
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 			tE = time.time()
 			dt = tE - ts
 			self.time_elapsed += dt
@@ -508,13 +433,9 @@ class MyAI( AI ):
 			print("hi welcome to top")
 			self.refLabel[x, y + 1] = 'U'
 			self.amove = Action(AI.Action.UNCOVER, x, y + 1)
-<<<<<<< HEAD
 
 			
 
-=======
-			self.numUncoveredtiles += 1
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 			tE = time.time()
 			dt = tE-ts
 			self.time_elapsed += dt
@@ -528,14 +449,10 @@ class MyAI( AI ):
 			self.refLabel[x, y - 1] = 'U'
 
 			self.amove = Action(AI.Action.UNCOVER, x, y - 1)
-<<<<<<< HEAD
 
 
 			
 
-=======
-			self.numUncoveredtiles += 1
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
 			tE = time.time()
 			dt = tE - ts
 			self.time_elapsed += dt
@@ -635,14 +552,4 @@ class MyAI( AI ):
 		self.numUncoveredtiles += 1
 		
 		return randomTup
-<<<<<<< HEAD
 		#self.action = Action(AI.Action.UNCOVER, randx, randy)
-=======
-		#self.action = Action(AI.Action.UNCOVER, randx, randy)
-
-
-		
-		
-		
-	
->>>>>>> 15170f806905778c9da93c8c191767e71d2dbb87
