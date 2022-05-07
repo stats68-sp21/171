@@ -15,6 +15,7 @@
 #               - DO NOT MAKE CHANGES TO THIS FILE.
 # ==============================CS-199==================================
  
+from re import A
 from AI import AI
 from Action import Action
 import numpy as np
@@ -119,18 +120,14 @@ class MyAI( AI ):
                         print("Returned nothing")
                         coordinates = self.chooseRandom()
                         self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
-<<<<<<< HEAD
+
                         self.numUncoveredtiles +=1
-=======
->>>>>>> a1097c930fe3f9c1084ced927b66d84b6b9e194e
- 
+
+
                         return self.amove
  
                     else:
-<<<<<<< HEAD
                        
-=======
->>>>>>> a1097c930fe3f9c1084ced927b66d84b6b9e194e
                         return result
                    
  
@@ -362,12 +359,6 @@ class MyAI( AI ):
         print("Checking left condition")
         if self.tileinBounds(x - 1, y) and self.refLabel[x - 1, y] == '':  # if coordinates is valid and it is not touched yet
             print("hi, welcome to the left!")
-<<<<<<< HEAD
-=======
- 
-            self.refLabel[x - 1, y] = 'U'
-           
->>>>>>> a1097c930fe3f9c1084ced927b66d84b6b9e194e
  
             self.refLabel[x - 1, y] = 'U'
            
@@ -728,18 +719,12 @@ class MyAI( AI ):
                         print("Returned nothing")
                         coordinates = self.chooseRandom()
                         self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
-<<<<<<< HEAD
                         self.numUncoveredtiles +=1
-=======
->>>>>>> a1097c930fe3f9c1084ced927b66d84b6b9e194e
  
                         return self.amove
  
                     else:
-<<<<<<< HEAD
                        
-=======
->>>>>>> a1097c930fe3f9c1084ced927b66d84b6b9e194e
                         return result
                    
  
@@ -971,12 +956,6 @@ class MyAI( AI ):
         print("Checking left condition")
         if self.tileinBounds(x - 1, y) and self.refLabel[x - 1, y] == '':  # if coordinates is valid and it is not touched yet
             print("hi, welcome to the left!")
-<<<<<<< HEAD
-=======
- 
-            self.refLabel[x - 1, y] = 'U'
-           
->>>>>>> a1097c930fe3f9c1084ced927b66d84b6b9e194e
  
             self.refLabel[x - 1, y] = 'U'
            
