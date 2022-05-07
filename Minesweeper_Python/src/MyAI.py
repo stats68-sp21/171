@@ -197,6 +197,9 @@ class MyAI( AI ):
 
 		# right side
 
+
+		## i push this
+
 		## right
 		if self.tileinBounds(x + 1, y) and (x + 1, y) not in self.flag and (x + 1, y) not in self.unTiles: 
 			self.flag.append((x + 1, y))
