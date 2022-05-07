@@ -110,7 +110,18 @@ class MyAI( AI ):
 					print('b')
 					
 					print(self.elabel[self.amove.getX(), self.amove.getY()])
-					return self.unCoverAll(self.amove.getX(), self.amove.getY(),ts)
+
+					result = self.unCoverAll(self.amove.getX(), self.amove.getY(),ts)
+					if(result == None):
+						print("Returned nothing")
+						coordinates = self.chooseRandom()
+						self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
+
+						return self.amove
+
+					else:
+						return result
+					
 
 				# make a random guess
 				if not self.elabel[self.amove.getX(), self.amove.getY()] == 0 and not self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged:
@@ -128,8 +139,8 @@ class MyAI( AI ):
 				print(self.elabel[self.amove.getX(), self.amove.getY()])
 				print("oh we're leaving now?")
 				return Action(AI.Action.LEAVE)
-
-			#print("Why are we here?")
+			else:
+				print("The number is negative and we don't know what to do! Number: ", number)
 
 
 			
@@ -335,11 +346,13 @@ class MyAI( AI ):
 		print('we at uncover now')
 		# left side
 		## left
-		if self.tileinBounds(x - 1, y) and self.refLabel[x - 1, y] == '':  # if coordinates is valid and it is not touched yet
 
+		print("Checking left condition")
+		if self.tileinBounds(x - 1, y) and self.refLabel[x - 1, y] == '':  # if coordinates is valid and it is not touched yet
+			print("hi, welcome to the left!")
 
 			self.refLabel[x - 1, y] = 'U'
-			print("hi, welcome to the left!")
+			
 
 			self.amove = Action(AI.Action.UNCOVER, x - 1, y)
 			
@@ -355,6 +368,7 @@ class MyAI( AI ):
 
 			return self.amove
 	
+		print("Checking top left condition")
 		## top left
 		if self.tileinBounds(x - 1, y + 1) and self.refLabel[x - 1, y + 1] == '':  
 			
@@ -371,6 +385,7 @@ class MyAI( AI ):
 
 			return self.amove
 		
+		print("Checking bottom left condition")
 		## bottom left
 		if self.tileinBounds(x - 1, y - 1) and self.refLabel[x - 1, y - 1] == '': 
 			
@@ -390,6 +405,7 @@ class MyAI( AI ):
 
 
 		## right
+		print("Checking right condition")
 		if self.tileinBounds(x + 1, y) and self.refLabel[x + 1, y] == '':  
 			
 			
@@ -406,6 +422,7 @@ class MyAI( AI ):
 			return self.amove
 		
 		## top right
+		print("Checking top right condition")
 		if self.tileinBounds(x + 1, y + 1)  and self.refLabel[x + 1, y + 1] == '':  
 			
 			print("hi welcome to the top right")
@@ -422,6 +439,7 @@ class MyAI( AI ):
 			return self.amove
 		
 		## bottom right
+		print("Checking bottom right condition")
 		if self.tileinBounds(x + 1, y - 1) and self.refLabel[x + 1, y - 1] == '':
 
 			print("hi welcome to the bottom right")
@@ -438,6 +456,7 @@ class MyAI( AI ):
 		
 
 		#top 
+		print("Checking top condition")
 		if self.tileinBounds(x, y + 1) and self.refLabel[x, y + 1] == '': 
 			
 			print("hi welcome to top")
@@ -453,6 +472,7 @@ class MyAI( AI ):
 			return self.amove
 
 		#bottom 
+		print("Checking bottom  condition")
 		if self.tileinBounds(x, y - 1) and self.refLabel[x, y - 1] == '':  
 			
 			print("hi welcome bottom")
@@ -468,7 +488,7 @@ class MyAI( AI ):
 			self.time_elapsed += dt
 
 			return self.amove
-		
+		print("None of the conditions were satisfied")
 
 	def markedOrUnmarked(self, x, y):
 		i = 0 # marked with a flag
@@ -543,10 +563,11 @@ class MyAI( AI ):
 
 	#check if tile is in Bounds or not 
 	def tileinBounds(self, x, y):
-		if x < 0 or x >= self.row or y < 0 or y >= self.col:
-			return False
-		else:
+		if (x >= 0 and x < self.row) and (y >= 0 and y < self.col) :
 			return True
+		else:
+			print("Tile is in bounds")
+			return False
 
 	def chooseRandom(self):
 		
