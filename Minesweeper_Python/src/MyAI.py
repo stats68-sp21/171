@@ -15,7 +15,7 @@
 from AI import AI
 from Action import Action
 import numpy as np
-from random import randint
+import random
 import time
 
 
@@ -111,13 +111,23 @@ class MyAI( AI ):
 					
 					print(self.elabel[self.amove.getX(), self.amove.getY()])
 					return self.unCoverAll(self.amove.getX(), self.amove.getY(),ts)
-				else:
-					print('c')
-					print(self.numUncoveredtiles)
-					print(self.amove.getX(), self.amove.getY())
-					print(self.elabel[self.amove.getX(), self.amove.getY()])
-					print("oh we're leaving now?")
-					return Action(AI.Action.LEAVE)
+
+				# make a random guess
+				if not self.elabel[self.amove.getX(), self.amove.getY()] == 0 and not self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged:
+					print("random guess")
+					coordinates = self.chooseRandom()
+					self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
+
+					return self.amove
+
+				
+			
+				print('c')
+				print(self.numUncoveredtiles)
+				print(self.amove.getX(), self.amove.getY())
+				print(self.elabel[self.amove.getX(), self.amove.getY()])
+				print("oh we're leaving now?")
+				return Action(AI.Action.LEAVE)
 
 			#print("Why are we here?")
 
@@ -540,16 +550,20 @@ class MyAI( AI ):
 
 	def chooseRandom(self):
 		
-		randx = randint(0, self.row - 1) # bounds for x 
-		randy = randint(0, self.col - 1) # bounds for y
-
-		while((randx,randy) in self.unTiles or (randx == self.amove.getX() and randy == self.amove.getY()) ):
-			randx = randint(0, self.row - 1) # bounds for x 
-			randy = randint(0, self.col - 1) # bounds for y
 		
-		randomTup = [randx,randy]
 
-		self.numUncoveredtiles += 1
+		explore = []
+		for x in range(0, self.row):
+			for y in range(0, self.col):
+				if self.refLabel[x, y] == '': # if empty string then we explore
+					explore.append((x, y))
+
+		coords = random.choice(explore)
+
 		
-		return randomTup
+		
+		
+		
+		
+		return coords
 		#self.action = Action(AI.Action.UNCOVER, randx, randy)
