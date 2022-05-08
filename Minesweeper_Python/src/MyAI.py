@@ -727,6 +727,7 @@ class MyAI( AI ):
                     if(result == None):
                         print("Returned nothing")
                         coordinates = self.chooseRandom()
+                        self.refLabel[coordinates[0], coordinates[1]] = 'U'
                         self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
                         self.numUncoveredtiles +=1
  
@@ -741,6 +742,7 @@ class MyAI( AI ):
                 if not self.elabel[self.amove.getX(), self.amove.getY()] == 0 and not self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged:
                     print("random guess")
                     coordinates = self.chooseRandom()
+                    self.refLabel[coordinates[0], coordinates[1]] = 'U'
                     self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
                     self.numUncoveredtiles +=1
  
@@ -772,7 +774,7 @@ class MyAI( AI ):
         #                           YOUR CODE ENDS                             #
         ########################################################################
  
- 
+    -
     def updateELabel(self, x, y):
         #left
         self.elabel[x - 1, y] -= 1
