@@ -58,7 +58,7 @@ class MyAI( AI ):
  
        
  
-       
+       # no prints this time
  
         ########################################################################
         #                           YOUR CODE ENDS                             #
@@ -73,10 +73,10 @@ class MyAI( AI ):
  
         if(remaining_time < 3):
             random_coords = self.chooseRandom()
-            print("hi")
+            #print("hi")
             return Action(AI.Action.UNCOVER, random_coords[0],random_coords[1])
         else:
-            print("Action start!")
+            #print("Action start!")
             ts = time.time()
         ########################################################################
         #                           YOUR CODE BEGINS                           #
@@ -84,7 +84,7 @@ class MyAI( AI ):
        
             #win condition= uncovered all except one tile
             if (self.row * self.col) - self.numOfMines == self.numUncoveredtiles:
-                print('Done')
+                #print('Done')
                 return Action(AI.Action.LEAVE)
  
             #check which tiles are uncovered relative to the current position
@@ -104,25 +104,25 @@ class MyAI( AI ):
                ## Rule of thumb
                 if self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged: # mark all unmarked neighbors
                    
-                    print('Mark all unmarked neighbors')
+                    #print('a')
                    
-                    print(self.elabel[self.amove.getX(), self.amove.getY()])
+                    #print(self.elabel[self.amove.getX(), self.amove.getY()])
  
  
-                    self.coverAll(self.amove.getX(), self.amove.getY(),ts)
+                     self.coverAll(self.amove.getX(), self.amove.getY(),ts)
                    
  
                 if self.elabel[self.amove.getX(), self.amove.getY()] == 0: # uncover all unmarked neighbors
                    
-                    print('Uncover all unmarked neighbors')
+                    #print('b')
                    
-                    print(self.elabel[self.amove.getX(), self.amove.getY()])
+                    #print(self.elabel[self.amove.getX(), self.amove.getY()])
  
                     result = self.unCoverAll(self.amove.getX(), self.amove.getY(),ts)
 
                     ## random guess
                     if(result == None):
-                        print("Returned nothing")
+                        #print("Returned nothing")
                         coordinates = self.chooseRandom()
                         self.refLabel[coordinates[0], coordinates[1]] = 'U'
                         self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
@@ -140,7 +140,7 @@ class MyAI( AI ):
  
                 # make a random guess
                 if not self.elabel[self.amove.getX(), self.amove.getY()] == 0 and not self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged:
-                    print("random guess")
+                    #print("random guess")
                     coordinates = self.chooseRandom()
                     self.refLabel[coordinates[0], coordinates[1]] = 'U'
                     self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
@@ -151,14 +151,14 @@ class MyAI( AI ):
  
                
            
-                print('c')
-                print(self.numUncoveredtiles)
-                print(self.amove.getX(), self.amove.getY())
-                print(self.elabel[self.amove.getX(), self.amove.getY()])
-                print("oh we're leaving now?")
+                #print('c')
+                #print(self.numUncoveredtiles)
+                #print(self.amove.getX(), self.amove.getY())
+                #print(self.elabel[self.amove.getX(), self.amove.getY()])
+                #print("oh we're leaving now?")
                 return Action(AI.Action.LEAVE)
-            else:
-                print("The number is negative and we don't know what to do! Number: ", number)
+            #else:
+                #print("The number is negative and we don't know what to do! Number: ", number)
  
  
            
@@ -197,16 +197,16 @@ class MyAI( AI ):
     def coverAll(self, x, y, ts):
         # left side
         ## left
-        print("Hi, we're covering stuff now")
+        #print("Hi, we're covering stuff now")
         if self.tileinBounds(x - 1, y) and self.refLabel[x - 1, y] == '':  # if coordinates is valid and it is not touched yet
             self.refLabel[x - 1, y] = 'F'
-            print("hi, welcome to the left!")
+            #print("hi, welcome to the left!")
             self.amove = Action(AI.Action.FLAG, x - 1, y)
  
-            print('printing elabel before')
-            print(self.elabel[x - 1, y])
+            #print('printing elabel before')
+            #print(self.elabel[x - 1, y])
             self.updateELabel(x - 1, y)
-            print('fin')
+            #print('fin')
            
  
             #time now
@@ -220,14 +220,14 @@ class MyAI( AI ):
         ## top left
         if self.tileinBounds(x - 1, y + 1) and self.refLabel[x - 1, y + 1] == '':  
            
-            print("Hi welcome to the top left!")
+            #print("Hi welcome to the top left!")
             self.refLabel[x - 1, y + 1] = 'F'
             self.amove = Action(AI.Action.FLAG, x - 1, y + 1)
  
-            print('printing elabel before')
-            print(self.elabel[x - 1, y + 1])
+            #print('printing elabel before')
+            #print(self.elabel[x - 1, y + 1])
             self.updateELabel(x - 1, y + 1)
-            print('fin')
+            #print('fin')
  
  
             tE = time.time()
@@ -239,15 +239,15 @@ class MyAI( AI ):
         ## bottom left
         if self.tileinBounds(x - 1, y - 1) and self.refLabel[x - 1, y - 1] == '':
            
-            print("hi welcome to the bottom left")
+            #print("hi welcome to the bottom left")
             self.refLabel[x - 1, y  - 1] = 'F'
             self.amove = Action(AI.Action.FLAG, x - 1, y - 1)
  
  
-            print('printing elabel before')
-            print(self.elabel[x - 1, y - 1])
+            #print('printing elabel before')
+            #print(self.elabel[x - 1, y - 1])
             self.updateELabel(x - 1, y - 1)
-            print('fin')
+            #print('fin')
  
             tE = time.time()
             dt = tE-ts
@@ -263,14 +263,14 @@ class MyAI( AI ):
         if self.tileinBounds(x + 1, y) and self.refLabel[x + 1, y] == '':  
            
            
-            print("hi welcome to the right!")
+            #print("hi welcome to the right!")
             self.refLabel[x + 1, y] = 'F'
             self.amove = Action(AI.Action.FLAG, x + 1, y)
  
-            print('printing elabel before')
-            print(self.elabel[x + 1, y])
+            #print('printing elabel before')
+            #print(self.elabel[x + 1, y])
             self.updateELabel(x + 1, y)
-            print('fin')
+            #print('fin')
  
             tE = time.time()
             dt = tE-ts
@@ -281,15 +281,15 @@ class MyAI( AI ):
         ## top right
         if self.tileinBounds(x + 1, y + 1)  and self.refLabel[x + 1, y + 1] == '':  
            
-            print("hi welcome to the top right")
+            #print("hi welcome to the top right")
  
             self.refLabel[x + 1, y + 1] = 'F'
             self.amove = Action(AI.Action.FLAG, x + 1, y + 1)
  
-            print('printing elabel before')
-            print(self.elabel[x + 1, y + 1])
+            #print('printing elabel before')
+            #print(self.elabel[x + 1, y + 1])
             self.updateELabel(x + 1, y + 1)
-            print('fin')
+            #print('fin')
  
             tE = time.time()
             dt = tE-ts
@@ -300,14 +300,14 @@ class MyAI( AI ):
         ## bottom right
         if self.tileinBounds(x + 1, y - 1) and self.refLabel[x + 1, y - 1] == '':
  
-            print("hi welcome to the bottom right")
+            #print("hi welcome to the bottom right")
             self.refLabel[x + 1, y - 1] = 'F'
             self.amove = Action(AI.Action.FLAG, x + 1, y - 1)
  
-            print('printing elabel before')
-            print(self.elabel[x + 1, y - 1])
+            #print('printing elabel before')
+            #print(self.elabel[x + 1, y - 1])
             self.updateELabel(x + 1, y - 1)
-            print('fin')
+            #print('fin')
  
  
             tE = time.time()
@@ -320,14 +320,14 @@ class MyAI( AI ):
         #top
         if self.tileinBounds(x, y + 1) and self.refLabel[x, y + 1] == '':
            
-            print("hi welcome to top")
+            #print("hi welcome to top")
             self.refLabel[x, y + 1] = 'F'
             self.amove = Action(AI.Action.FLAG, x, y + 1)
  
-            print('printing elabel before')
-            print(self.elabel[x, y + 1])
+            #print('printing elabel before')
+            #print(self.elabel[x, y + 1])
             self.updateELabel(x, y + 1)
-            print('fin')
+            #print('fin')
  
             tE = time.time()
             dt = tE-ts
@@ -338,16 +338,16 @@ class MyAI( AI ):
         #bottom
         if self.tileinBounds(x, y - 1) and self.refLabel[x, y - 1] == '':  
            
-            print("hi welcome bottom")
+            #print("hi welcome bottom")
             self.refLabel[x, y - 1] = 'F'
  
             self.amove = Action(AI.Action.FLAG, x, y - 1)
  
  
-            print('printing elabel before')
-            print(self.elabel[x, y - 1])
+            #print('printing elabel before')
+            #print(self.elabel[x, y - 1])
             self.updateELabel(x, y - 1)
-            print('fin')
+            #print('fin')
  
             tE = time.time()
             dt = tE - ts
@@ -356,19 +356,18 @@ class MyAI( AI ):
             return self.amove
  
  
-        print("None of the condition in covering were satisfied")
        
  
  
     def unCoverAll(self, x, y,ts):
        
-        print('we at uncover now')
+        #print('we at uncover now')
         # left side
         ## left
  
-        print("Checking left condition")
+        #print("Checking left condition")
         if self.tileinBounds(x - 1, y) and self.refLabel[x - 1, y] == '':  # if coordinates is valid and it is not touched yet
-            print("hi, welcome to the left!")
+            #print("hi, welcome to the left!")
  
             self.refLabel[x - 1, y] = 'U'
            
@@ -387,11 +386,11 @@ class MyAI( AI ):
  
             return self.amove
    
-        print("Checking top left condition")
+        #print("Checking top left condition")
         ## top left
         if self.tileinBounds(x - 1, y + 1) and self.refLabel[x - 1, y + 1] == '':  
            
-            print("Hi welcome to the top left!")
+            #print("Hi welcome to the top left!")
             self.refLabel[x - 1, y + 1] = 'U'
             self.amove = Action(AI.Action.UNCOVER, x - 1, y + 1)
             self.numUncoveredtiles +=1
@@ -405,11 +404,11 @@ class MyAI( AI ):
  
             return self.amove
        
-        print("Checking bottom left condition")
+        #print("Checking bottom left condition")
         ## bottom left
         if self.tileinBounds(x - 1, y - 1) and self.refLabel[x - 1, y - 1] == '':
            
-            print("hi welcome to the bottom left")
+            #print("hi welcome to the bottom left")
             self.refLabel[x - 1, y  - 1] = 'U'
             self.amove = Action(AI.Action.UNCOVER, x - 1, y - 1)
             self.numUncoveredtiles +=1
@@ -426,11 +425,11 @@ class MyAI( AI ):
  
  
         ## right
-        print("Checking right condition")
+        #print("Checking right condition")
         if self.tileinBounds(x + 1, y) and self.refLabel[x + 1, y] == '':  
            
            
-            print("hi welcome to the right!")
+            #print("hi welcome to the right!")
             self.refLabel[x + 1, y] = 'U'
             self.amove = Action(AI.Action.UNCOVER, x + 1, y)
             self.numUncoveredtiles +=1
@@ -444,10 +443,10 @@ class MyAI( AI ):
             return self.amove
        
         ## top right
-        print("Checking top right condition")
+        #print("Checking top right condition")
         if self.tileinBounds(x + 1, y + 1)  and self.refLabel[x + 1, y + 1] == '':  
            
-            print("hi welcome to the top right")
+            #print("hi welcome to the top right")
  
             self.refLabel[x + 1, y + 1] = 'U'
             self.amove = Action(AI.Action.UNCOVER, x + 1, y + 1)
@@ -462,10 +461,10 @@ class MyAI( AI ):
             return self.amove
        
         ## bottom right
-        print("Checking bottom right condition")
+        #print("Checking bottom right condition")
         if self.tileinBounds(x + 1, y - 1) and self.refLabel[x + 1, y - 1] == '':
  
-            print("hi welcome to the bottom right")
+            #print("hi welcome to the bottom right")
             self.refLabel[x + 1, y - 1] = 'U'
             self.amove = Action(AI.Action.UNCOVER, x + 1, y - 1)
             self.numUncoveredtiles +=1
@@ -480,10 +479,10 @@ class MyAI( AI ):
        
  
         #top
-        print("Checking top condition")
+        #print("Checking top condition")
         if self.tileinBounds(x, y + 1) and self.refLabel[x, y + 1] == '':
            
-            print("hi welcome to top")
+            #print("hi welcome to top")
             self.refLabel[x, y + 1] = 'U'
             self.amove = Action(AI.Action.UNCOVER, x, y + 1)
             self.numUncoveredtiles +=1
@@ -497,10 +496,10 @@ class MyAI( AI ):
             return self.amove
  
         #bottom
-        print("Checking bottom  condition")
+        #print("Checking bottom  condition")
         if self.tileinBounds(x, y - 1) and self.refLabel[x, y - 1] == '':  
            
-            print("hi welcome bottom")
+            #print("hi welcome bottom")
             self.refLabel[x, y - 1] = 'U'
  
             self.amove = Action(AI.Action.UNCOVER, x, y - 1)
@@ -514,7 +513,7 @@ class MyAI( AI ):
             self.time_elapsed += dt
  
             return self.amove
-        print("None of the conditions were satisfied")
+        #print("None of the conditions were satisfied")
  
     def markedOrUnmarked(self, x, y):
         i = 0 # marked with a flag
@@ -615,5 +614,13 @@ class MyAI( AI ):
         return coords
         #self.action = Action(AI.Action.UNCOVER, randx, randy)
  
-
-
+#
+# DESCRIPTION:  This file contains the MyAI class. You will implement your
+#               agent in this file. You will write the 'getAction' function,
+#               the constructor, and any additional helper functions.
+#
+# NOTES:        - MyAI inherits from the abstract AI class in AI.py.
+#
+#               - DO NOT MAKE CHANGES TO THIS FILE.
+# ==============================CS-199==================================
+ 
