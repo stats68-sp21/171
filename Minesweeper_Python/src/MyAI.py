@@ -705,7 +705,8 @@ class MyAI( AI ):
                 # EffectiveLabel(x) = Label(x) – NumMarkedNeighbors(x)
            
                 self.elabel[self.amove.getX(), self.amove.getY()] = self.label[self.amove.getX(), self.amove.getY()] - numFlagged
- 
+
+
                
                 if self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged: # mark all unmarked neighbors
                    
@@ -714,7 +715,9 @@ class MyAI( AI ):
                     print(self.elabel[self.amove.getX(), self.amove.getY()])
  
  
-                    self.coverAll(self.amove.getX(), self.amove.getY(),ts)
+                    temp = self.coverAll(self.amove.getX(), self.amove.getY(),ts)
+                    return temp
+                    
                    
  
                 if self.elabel[self.amove.getX(), self.amove.getY()] == 0: # uncover all unmarked neighbors
@@ -774,7 +777,8 @@ class MyAI( AI ):
         #                           YOUR CODE ENDS                             #
         ########################################################################
  
-    -
+    
+     
     def updateELabel(self, x, y):
         #left
         self.elabel[x - 1, y] -= 1
