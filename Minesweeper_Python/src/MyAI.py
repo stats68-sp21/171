@@ -16,6 +16,7 @@
 # ==============================CS-199==================================
  
 from re import A
+from typing_extensions import Self
 from AI import AI
 from Action import Action
 import numpy as np
@@ -47,7 +48,8 @@ class MyAI( AI ):
         self.elabel = np.full((rowDimension, colDimension), -1)
         self.refLabel = np.full((rowDimension, colDimension), "") # this creates a reference board, an empty string indicates the tile has not been touched yet
         # we can label each tile as a flagged and uncovered
- 
+
+       
         self.amove = Action(AI.Action.UNCOVER, startX, startY) #uncovers the first move tile
         self.time_elapsed = 0.0
  
@@ -98,7 +100,7 @@ class MyAI( AI ):
            
                 self.elabel[self.amove.getX(), self.amove.getY()] = self.label[self.amove.getX(), self.amove.getY()] - numFlagged
  
-               
+               ## Rule of thumb
                 if self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged: # mark all unmarked neighbors
                    
                     print('a')
@@ -116,10 +118,13 @@ class MyAI( AI ):
                     print(self.elabel[self.amove.getX(), self.amove.getY()])
  
                     result = self.unCoverAll(self.amove.getX(), self.amove.getY(),ts)
+
+                    ## random guess
                     if(result == None):
                         print("Returned nothing")
                         coordinates = self.chooseRandom()
                         self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
+                        
 
                         self.numUncoveredtiles +=1
 
@@ -845,7 +850,7 @@ class MyAI( AI ):
        
  
         # right side
- 
+
  
         ## right
         if self.tileinBounds(x + 1, y) and self.refLabel[x + 1, y] == '':  
