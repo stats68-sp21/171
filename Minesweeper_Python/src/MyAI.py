@@ -30,7 +30,7 @@ class MyAI( AI ):
  
     def __init__(self, rowDimension, colDimension, totalMines, startX, startY):
  
-       
+        self.initalCoords = [startX,startY]
         self.row = rowDimension
         self.col = colDimension
         self.numOfMines = totalMines
@@ -138,8 +138,11 @@ class MyAI( AI ):
                      
                      
                 ## Get get the adjacent tile with no bombs or less likey to be a bomb
+                ref_c = [  self.amove.getX(),self.amove.getY()]
                 
-                if not self.elabel[self.amove.getX(), self.amove.getY()] == 0 and not self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged:
+                if not self.elabel[self.amove.getX(), self.amove.getY()] == 0 and not self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged and ref_c != self.initalCoords:
+                    print(self.elabel[self.amove.getX(), self.amove.getY()])
+                    print(numNoFlagged)
                     #print('special case')
                     
                     d = self.specialUncover()
@@ -302,7 +305,8 @@ class MyAI( AI ):
                 else:
                     #print('found some')
                     break
-                
+
+        
         if coords == False: #exhausted the amount of tiles with zero bombs near it that are yet to be uncovered
              return False
             
