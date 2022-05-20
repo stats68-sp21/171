@@ -15,7 +15,9 @@
 #               - DO NOT MAKE CHANGES TO THIS FILE.
 # ==============================CS-199==================================
  
+from http.client import FOUND
 from re import A
+from socket import if_indextoname
 
 from AI import AI
 from Action import Action
@@ -52,6 +54,9 @@ class MyAI( AI ):
        
         self.amove = Action(AI.Action.UNCOVER, startX, startY) #uncovers the first move tile
         self.refLabel[startX, startY] = 'U'
+        
+        self.number0 = [] # get the adjacent tiles that are uncovered and with number zero
+        self.numer1 = [] # gett the adjacent tiles that are uncovered and with a number 1
         self.time_elapsed = 0.0
  
        
@@ -94,6 +99,10 @@ class MyAI( AI ):
  
                 self.refLabel[self.amove.getX(), self.amove.getY()] = 'U' # u indicates uncovered
                 self.label[self.amove.getX(), self.amove.getY()] = number # the number of adjacent bombs
+                
+                
+                if number == 0: # get the coordinates of those tile with zero bombs
+                    self.number0.append((self.amove.getX(), self.amove.getY()))
  
                 numFlagged, numNoFlagged = self.markedOrUnmarked(self.amove.getX(), self.amove.getY())
  
@@ -101,53 +110,79 @@ class MyAI( AI ):
            
                 self.elabel[self.amove.getX(), self.amove.getY()] = self.label[self.amove.getX(), self.amove.getY()] - numFlagged
  
-               ## Rule of thumb
-                if self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged: # mark all unmarked neighbors
-                   
-                    #print('a')
-                   
-                    #print(self.elabel[self.amove.getX(), self.amove.getY()])
- 
- 
-                     self.coverAll(self.amove.getX(), self.amove.getY(),ts)
+               
                    
  
                 if self.elabel[self.amove.getX(), self.amove.getY()] == 0: # uncover all unmarked neighbors
                    
-                    #print('b')
+                    #print('Uncover all unmarked neighbors')
                    
                     #print(self.elabel[self.amove.getX(), self.amove.getY()])
  
                     result = self.unCoverAll(self.amove.getX(), self.amove.getY(),ts)
-
-                    ## random guess
-                    if(result == None):
-                        #print("Returned nothing")
-                        coordinates = self.chooseRandom()
-                        self.refLabel[coordinates[0], coordinates[1]] = 'U'
-                        self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
+                    
+                    if result != None:
+                        return result
+                
+                    
+                    
+                ## Rule of thumb
+                if self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged: # mark all unmarked neighbors
+                   
+                    #print('Mark all neighbors')
+                   
+                    #print(self.elabel[self.amove.getX(), self.amove.getY()])
+ 
+ 
+                    self.coverAll(self.amove.getX(), self.amove.getY(),ts)
+                     
+                     
+                ## Get get the adjacent tile with no bombs or less likey to be a bomb
+                
+                if not self.elabel[self.amove.getX(), self.amove.getY()] == 0 and not self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged:
+                    #print('special case')
+                    
+                    d = self.specialUncover()
+            
+                    if d == False:
+                        #print('minMaxTest')
+                        d = self.minMaxTile()
+                        
+                        if d == False:
+                            #print('random case')
+                            coordinates = self.chooseRandom()
+                            self.refLabel[coordinates[0], coordinates[1]] = 'U'
+                            self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
                         
 
-                        self.numUncoveredtiles +=1
+                            self.numUncoveredtiles +=1
 
 
-                        return self.amove
+                            return self.amove
+                        else:
+                            return d
+                    
  
                     else:
                        
-                        return result
-                   
+                        return d
+                        
+                        
+                        
+                        
+                    
+                #print('no case hehe')
  
-                # make a random guess
-                if not self.elabel[self.amove.getX(), self.amove.getY()] == 0 and not self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged:
+                ## make a random guess
+                
                     #print("random guess")
-                    coordinates = self.chooseRandom()
-                    self.refLabel[coordinates[0], coordinates[1]] = 'U'
-                    self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
+                coordinates = self.chooseRandom()
+                self.refLabel[coordinates[0], coordinates[1]] = 'U'
+                self.amove = Action(AI.Action.UNCOVER, coordinates[0], coordinates[1])
 
-                    self.numUncoveredtiles +=1
+                self.numUncoveredtiles +=1
  
-                    return self.amove
+                return self.amove
  
                
            
@@ -174,7 +209,154 @@ class MyAI( AI ):
         ########################################################################
         #                           YOUR CODE ENDS                             #
         ########################################################################
+        
+    def minMaxTile(self):
+        explore = []
+        for x in range(0, self.row):
+            for y in range(0, self.col):
+                if self.refLabel[x, y] == '': # if empty string then we explore
+                    explore.append((x, y))
+                    
+        max_coords = (-1, -1)
+        max_value = 10000000000000000
+        
+        # finds the one with the min value of adjacent bombs near it
+        #print(explore)
+        for x in explore:
+            temp = self.specialCheck(x[0], x[1])
+            
+            
+            
+            if temp < max_value: 
+                max_value = temp
+                max_coords = (x[0], x[1])
+                
+        if max_value != 0:
+            
+            #print(max_value)
+            #print(max_coords)
+            
+            self.refLabel[max_coords[0], max_coords[1]] = 'U'
+            self.amove = Action(AI.Action.UNCOVER, max_coords[0], max_coords[1])
+            self.numUncoveredtiles +=1
+            return self.amove
+                
+        else: 
+            return False
+            
+        
+        
+    def specialCheck(self, x, y):
+        num = 0 
+        if self.tileinBounds(x - 1, y) and self.refLabel[x - 1, y] != '': 
+            num += self.label[x - 1, y]
+            
+        if self.tileinBounds(x - 1, y + 1) and self.refLabel[x - 1, y + 1] != '': 
+            num += self.label[x - 1, y + 1]
+        if self.tileinBounds(x - 1, y - 1) and self.refLabel[x - 1, y + 1] != '': 
+            num += self.label[x - 1, y + 1]
+        # right
+        if self.tileinBounds(x + 1, y) and self.refLabel[x - 1, y + 1] != '': 
+            num += self.label[x - 1, y + 1]
+            
+        if self.tileinBounds(x + 1, y - 1) and self.refLabel[x - 1, y + 1] != '': 
+            num += self.label[x - 1, y + 1]
+            
+        if self.tileinBounds(x + 1, y + 1) and self.refLabel[x - 1, y + 1] != '':
+            num += self.label[x - 1, y + 1]
  
+        #top
+        if self.tileinBounds(x, y + 1) and self.refLabel[x, y + 1] != '':
+            num += self.label[x - 1, y] 
+ 
+        #bottom
+        if self.tileinBounds(x, y - 1) and self.refLabel[x - 1, y + 1] != '': 
+            num += self.label[x - 1, y + 1]
+        
+        return num
+    
+    def specialUncover(self):
+        
+        
+        explore = []
+        for x in range(0, self.row):
+            for y in range(0, self.col):
+                if self.refLabel[x, y] != '': # if empty string then we explore
+                    explore.append((x, y))
+                  
+                  
+     
+        
+        
+        for x in explore:
+            #print(x)
+            if self.label[x[0], x[1]] == 0:
+                
+                coords = self.getUntouchedAdjacent(x[0], x[1])
+                
+                if coords == False:
+                    #print('found none')
+                    continue
+                    
+                
+                else:
+                    #print('found some')
+                    break
+                
+        if coords == False: #exhausted the amount of tiles with zero bombs near it that are yet to be uncovered
+             return False
+            
+        new_coords = coords[0]
+        self.refLabel[new_coords[0], new_coords[1]] = 'U'
+        self.amove = Action(AI.Action.UNCOVER, new_coords[0], new_coords[1])
+        self.numUncoveredtiles +=1
+        
+        return self.amove
+        
+    
+    def getUntouchedAdjacent(self, x, y):
+        temp = []
+        #print('check untouched adjacent')
+        if self.tileinBounds(x - 1, y) and self.refLabel[x - 1, y] == '':  
+            temp.append((x - 1, y)) 
+            return temp
+        
+        if self.tileinBounds(x - 1, y + 1) and self.refLabel[x - 1, y + 1] == '': 
+            temp.append((x - 1, y + 1))
+            return temp
+        
+        if self.tileinBounds(x - 1, y - 1) and self.refLabel[x - 1, y - 1] == '': 
+            temp.append((x - 1, y - 1))
+            return temp
+ 
+        # right
+        if self.tileinBounds(x + 1, y) and self.refLabel[x + 1, y] == '': 
+            temp.append((x + 1, y))
+            return temp
+        
+        
+        if self.tileinBounds(x + 1, y - 1) and self.refLabel[x + 1, y - 1] == '': 
+            
+            temp.append((x + 1, y - 1))
+            return temp
+        
+        if self.tileinBounds(x + 1, y + 1) and self.refLabel[x + 1, y + 1] == '': 
+            temp.append((x + 1, y + 1))
+            return temp
+ 
+        #top
+        if self.tileinBounds(x, y + 1) and self.refLabel[x, y + 1] == '': 
+            temp.append((x, y + 1))
+            return temp
+        #bottom
+        if self.tileinBounds(x, y - 1) and self.refLabel[x, y - 1] == '': 
+            temp.append((x, y - 1))
+            return temp
+        
+    
+        #print('no adjacent found')
+        return False
+      
  
     def updateELabel(self, x, y):
         #left
