@@ -140,17 +140,18 @@ class MyAI( AI ):
                 ## Get get the adjacent tile with no bombs or less likey to be a bomb
                 ref_c = [  self.amove.getX(),self.amove.getY()]
                 
-                if not self.elabel[self.amove.getX(), self.amove.getY()] == 0 and not self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged and ref_c != self.initalCoords:
-                    print(self.elabel[self.amove.getX(), self.amove.getY()])
-                    print(numNoFlagged)
-                    #print('special case')
+                
+                if not self.elabel[self.amove.getX(), self.amove.getY()] == 0 and not self.elabel[self.amove.getX(), self.amove.getY()] == numNoFlagged:
+                    #print(self.elabel[self.amove.getX(), self.amove.getY()])
+                    #print(numNoFlagged)
+                    #print('special case') s
                     
                     d = self.specialUncover()
-            
+                    #print("D was found to be false")
                     if d == False:
                         #print('minMaxTest')
                         d = self.minMaxTile()
-                        
+                        #print("min max didn't work, D is still false")
                         if d == False:
                             #print('random case')
                             coordinates = self.chooseRandom()
@@ -214,6 +215,7 @@ class MyAI( AI ):
         ########################################################################
         
     def minMaxTile(self):
+
         explore = []
         for x in range(0, self.row):
             for y in range(0, self.col):
@@ -223,17 +225,20 @@ class MyAI( AI ):
         max_coords = (-1, -1)
         max_value = 10000000000000000
         
+        
         # finds the one with the min value of adjacent bombs near it
         #print(explore)
         for x in explore:
+            #print("Coordinates going into special check:",x[0]," ",x[1])
             temp = self.specialCheck(x[0], x[1])
-            
-            
+            #print("We got through special check")
+           # print("temporary value",temp)
             
             if temp < max_value: 
                 max_value = temp
                 max_coords = (x[0], x[1])
-                
+           # print("Max coords",max_coords)
+        #print("we got to the value")
         if max_value != 0:
             
             #print(max_value)
@@ -242,9 +247,11 @@ class MyAI( AI ):
             self.refLabel[max_coords[0], max_coords[1]] = 'U'
             self.amove = Action(AI.Action.UNCOVER, max_coords[0], max_coords[1])
             self.numUncoveredtiles +=1
+            #print(max_coords[0], max_coords[1])
             return self.amove
-                
+        
         else: 
+            #print("returning false")
             return False
             
         
@@ -253,29 +260,35 @@ class MyAI( AI ):
         num = 0 
         if self.tileinBounds(x - 1, y) and self.refLabel[x - 1, y] != '': 
             num += self.label[x - 1, y]
-            
+       # print("First check done")
         if self.tileinBounds(x - 1, y + 1) and self.refLabel[x - 1, y + 1] != '': 
+            #print("in bounds")
             num += self.label[x - 1, y + 1]
-        if self.tileinBounds(x - 1, y - 1) and self.refLabel[x - 1, y + 1] != '': 
-            num += self.label[x - 1, y + 1]
+       # print("Second Check done")
+        if self.tileinBounds(x - 1, y - 1) and self.refLabel[x - 1, y - 1] != '': 
+            num += self.label[x - 1, y - 1]
         # right
-        if self.tileinBounds(x + 1, y) and self.refLabel[x - 1, y + 1] != '': 
-            num += self.label[x - 1, y + 1]
+       # print("Third Check done")
+        if self.tileinBounds(x + 1, y) and self.refLabel[x + 1, y] != '': 
+            num += self.label[x + 1, y]
+        #print("Third Check done")
+        if self.tileinBounds(x + 1, y - 1) and self.refLabel[x + 1, y - 1] != '': 
+            num += self.label[x + 1, y - 1]
             
-        if self.tileinBounds(x + 1, y - 1) and self.refLabel[x - 1, y + 1] != '': 
-            num += self.label[x - 1, y + 1]
-            
-        if self.tileinBounds(x + 1, y + 1) and self.refLabel[x - 1, y + 1] != '':
-            num += self.label[x - 1, y + 1]
+        if self.tileinBounds(x + 1, y + 1) and self.refLabel[x + 1, y + 1] != '':
+       #     print("in bounds")
+            num += self.label[x + 1, y + 1]
  
         #top
         if self.tileinBounds(x, y + 1) and self.refLabel[x, y + 1] != '':
-            num += self.label[x - 1, y] 
+        #    print("in bounds")
+            num += self.label[x, y+1] 
  
         #bottom
-        if self.tileinBounds(x, y - 1) and self.refLabel[x - 1, y + 1] != '': 
-            num += self.label[x - 1, y + 1]
-        
+        if self.tileinBounds(x, y - 1) and self.refLabel[x, y - 1] != '': 
+            num += self.label[x, y - 1]
+
+       # print("nothing in bounds")
         return num
     
     def specialUncover(self):
@@ -298,7 +311,7 @@ class MyAI( AI ):
                 coords = self.getUntouchedAdjacent(x[0], x[1])
                 
                 if coords == False:
-                    #print('found none')
+                   # print('found none')
                     continue
                     
                 
@@ -361,7 +374,6 @@ class MyAI( AI ):
         #print('no adjacent found')
         return False
       
- 
     def updateELabel(self, x, y):
         #left
         if self.tileinBounds(x - 1, y): self.elabel[x - 1, y] -= 1
@@ -541,10 +553,6 @@ class MyAI( AI ):
  
             return self.amove
  
- 
-       
- 
- 
     def unCoverAll(self, x, y,ts):
        
         #print('we at uncover now')
@@ -700,7 +708,6 @@ class MyAI( AI ):
  
             return self.amove
         #print("None of the conditions were satisfied")
- 
     def markedOrUnmarked(self, x, y):
         i = 0 # marked with a flag
         j = 0 # not marked with a flag
@@ -767,11 +774,6 @@ class MyAI( AI ):
  
         return i, j
  
-   
-   
- 
- 
- 
     #check if tile is in Bounds or not
     def tileinBounds(self, x, y):
         if (x >= 0 and x < self.row) and (y >= 0 and y < self.col) :
@@ -779,7 +781,7 @@ class MyAI( AI ):
         else:
             #print("Tile is in bounds")
             return False
- 
+
     def chooseRandom(self):
        
        
