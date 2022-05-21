@@ -303,7 +303,7 @@ class MyAI( AI ):
                   
      
         
-        
+        coords = False
         for x in explore:
             #print(x)
             if self.label[x[0], x[1]] == 0:
