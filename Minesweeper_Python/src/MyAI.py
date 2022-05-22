@@ -57,6 +57,7 @@ class MyAI( AI ):
         
         self.moves = [] # list all actions to do
         self.solvable = False
+        self.p = 0 # probability of a mine 
         self.time_elapsed = 0.0
 
        
@@ -109,6 +110,13 @@ class MyAI( AI ):
             #print(self.numUncoveredtiles)
             self.ruleOfThumb()
             
+            if self.solvable == False and self.numUncoveredtiles == 1:
+                temp = self.applyOpeningProb()
+                
+                if temp == False: # the probability is worse, then select one randomly
+                    self.chooseRandom()
+                    
+                    
                 
             
             #if len(self.moves) == 0:
@@ -161,6 +169,32 @@ class MyAI( AI ):
         ########################################################################
         #                           YOUR CODE ENDS                             #
         ########################################################################
+    def getSimpleProb(self): # probability of each tile being a bomb without prior knowledge
+        n = self.numOfMines
+        num = 0
+        for x in range(self.row):
+            for y in range(self.col):
+                if self.refLabel == '':
+                    num +=1
+                    
+        self.p = n / num
+        
+    
+    def applyOpeningProb(self):
+        num = self.label[self.amove.getX(), self.amove.getY()]
+        
+        if num / 8 < self.p: # uncover one of the random spots around the tile
+            
+            explore = self.getAdjacent(self.amove.getX(), self.amove.getY())
+            coords = random.choice(explore)
+            
+            self.moves.append(Action(AI.Action.UNCOVER, coords[0], coords[1]))
+            self.refLabel[coords[0], coords[1]] = 'U'
+            
+            return True
+        else:
+            return False
+        
         
     def numTiles(self):
         num = 0
@@ -171,6 +205,8 @@ class MyAI( AI ):
         #print(self.refLabel)
         self.numUncoveredtiles = num
         
+        
+    #def getFrontier(self, x, y):
         
         
     def tackleFrontier(self):
